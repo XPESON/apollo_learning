@@ -1,0 +1,59 @@
+syntax = "proto2"
+
+package apollo.drivers;
+
+import "modules/common_msgs/basic_msgs/error_code.proto";
+import "modules/common_msgs/basic_msgs/header.proto";
+
+message OculiiRawPointcloud {
+  optional float range = 1;
+  optional float doppler = 2;//点的多普勒属性，这里应该表示速度
+  optional float azimuth = 3;//（方位角）通常表示点的水平角度，即相对于一个参考方向的水平方向角度。这个参考方向通常是传感器的朝向或某个固定方向。
+  optional float elevation = 4; //（俯仰角）通常表示点相对于地平面的垂直角度。这个角度通常是相对于水平面测量的，可以用来描述点在垂直方向上的位置
+  optional float power = 5;
+}
+
+message OculiiPointXYZIV {
+  optional float x = 1 [default = nan];
+  optional float y = 2 [default = nan];
+  optional float z = 3 [default = nan];
+  optional float intensity = 4 [default = 0];
+  optional float velocity = 5 [default = 0];
+}
+
+message OculiiTrackTarget {
+  enum ObstacleClass {
+    UNKNOWN = 0;
+    PEDESTRIAN = 1;
+    BICYCLE = 2;
+    VEHICLE = 3;
+    TRUCK = 4;
+    BACKGROUND = 5;
+  }
+  optional int64 id = 1;
+  optional float x_pos = 2;
+  optional float  = 3;
+  optional float zy_pos_pos = 4;
+  optional float x_dot = 5;//目标在 X 轴上的速度（或速度的变化率）
+  optional float y_dot = 6;
+  optional float z_dot = 7;
+  optional int32 confidence = 8;//对目标跟踪结果的信心度或置信度，通常是一个整数值。
+  optional ObstacleClass track_class = 9;
+}
+
+message OculiiPointCloud {
+  optional apollo.common.Header header = 1;
+  optional string frame_id = 2;
+  optional bool is_dense = 3;
+  optional OculiiPointXYZIV point = 4;
+  optional double measurement_time = 5;
+  optional int32 width = 6;
+  optional int32 height = 7;
+  optional int64 packet_id = 8;//数据包标识符
+  optional float ego_speed = 9;
+  optional float ego_angle = 10;
+  optional int32 detection_size = 11;
+  optional int32 track_size = 12;
+  optional OculiiRawPointcloud raw_pointclouds = 13;
+  optional OculiiTrackTarget tracks = 14;
+}
